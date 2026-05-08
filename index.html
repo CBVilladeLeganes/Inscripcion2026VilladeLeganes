@@ -1345,32 +1345,36 @@ async function enviarFormulario() {
   ];
 
   try {
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    const resp = await fetch('https://script.google.com/macros/s/AKfycbx4rYEfhJ1r32Fo18ZMUev03-mWUT6pU9SEofst59mpawWhxpynysI0yTMoDOjrnWlJsA/exec', {
       method: 'POST',
+      mode: 'no-cors',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        system: `Eres un asistente que guarda datos en Google Sheets.
-Tu única tarea es añadir una fila a la hoja Google Sheets con ID: 19xQenWBNAMeXdglbGHAUtXxrCDTmik0vfMlQnHKwHRE
-Las columnas son: Timestamp,Tipo Jugador,Nombre,Apellidos,Fecha Nacimiento,DNI Jugador,Categoría,Talla Equipación,Nombre Tutor,Apellidos Tutor,DNI Tutor,Teléfono Tutor,Email Tutor,Teléfono Secundario,Alergias,Lesiones previas,Fecha Transferencia Preinscripción,Pack Equipación,Cuota Aceptada,RGPD Aceptado,Observaciones
-Responde SOLO con JSON válido: {"success":true} o {"success":false,"error":"motivo"}`,
-        messages: [{ role: 'user', content: `Añade esta fila a la hoja: ${JSON.stringify(row)}` }],
-        mcp_servers: [{ type: 'url', url: 'https://drivemcp.googleapis.com/mcp/v1', name: 'google-drive' }]
+        tipo: tipoLabel,
+        nombre, apellidos,
+        fechaNac: getVal('fechaNac'),
+        dni: getVal('dni'),
+        categoria,
+        procedencia: getVal('talla'),
+        tutorNombre: getVal('tutorNombre'),
+        tutorApellidos: getVal('tutorApellidos'),
+        tutorDni: getVal('tutorDni'),
+        tutorTel: getVal('tutorTel') || getVal('seniorTel'),
+        tutorEmail: getVal('tutorEmail') || getVal('seniorEmail'),
+        tutorTel2: getVal('tutorTel2'),
+        alergias: getVal('alergias') || 'Ninguna',
+        lesiones: getVal('lesiones') || 'Ninguna',
+        fechaTransferencia: fechaT,
+        pack: pack ? (packNombres[pack] || pack) : 'Sin seleccionar',
+        tallas: tallasResumen,
+        cuotaAceptada: 'Sí',
+        rgpd: 'Sí',
+        imagen: getChk('imagenCheck') ? 'Autoriza imágenes' : 'No autoriza'
       })
     });
 
-    const data = await resp.json();
-    let success = false;
-    if (data.content) {
-      const hasToolResult = data.content.some(b => b.type === 'mcp_tool_result');
-      const textBlock = data.content.find(b => b.type === 'text');
-      if (hasToolResult) success = true;
-      else if (textBlock) {
-        try { const p = JSON.parse(textBlock.text.replace(/```json|```/g,'').trim()); success = p.success === true; }
-        catch { success = textBlock.text.toLowerCase().includes('success'); }
-      }
-    }
+    // no-cors means we can't read the response, but if no exception = success
+    let success = true;
 
     document.getElementById('form-wrapper').style.display = 'none';
     document.getElementById('success-screen').style.display = 'block';
