@@ -924,6 +924,11 @@
             <label>Fecha de transferencia de preinscripción <span class="req">*</span></label>
             <input type="text" id="fechaTransferencia" placeholder="Ej: Ya realizada el 10/05/2026, o prevista para el 20/05/2026">
           </div>
+          <div class="field full" style="margin-bottom:14px;">
+            <label>🏦 IBAN para domiciliación de cuotas <span class="req">*</span></label>
+            <input type="text" id="ibanJugador" placeholder="Ej: ES00 0000 0000 0000 0000 0000" style="letter-spacing:0.05em;">
+            <small style="font-size:12px;color:var(--gray-text);margin-top:4px;display:block;">El club utilizará este número de cuenta para domiciliar el cobro de las cuotas mensuales.</small>
+          </div>
         </div>
 
         <!-- CUOTAS LOCAL -->
@@ -961,6 +966,11 @@
           <div class="field full" style="margin-bottom:14px;">
             <label>Fecha de transferencia de preinscripción <span class="req">*</span></label>
             <input type="text" id="fechaTransferenciaLocal" placeholder="Ej: Ya realizada el 10/05/2026, o prevista para el 20/05/2026">
+          </div>
+          <div class="field full" style="margin-bottom:14px;">
+            <label>🏦 IBAN para domiciliación de cuotas <span class="req">*</span></label>
+            <input type="text" id="ibanJugadorLocal" placeholder="Ej: ES00 0000 0000 0000 0000 0000" style="letter-spacing:0.05em;">
+            <small style="font-size:12px;color:var(--gray-text);margin-top:4px;display:block;">El club utilizará este número de cuenta para domiciliar el cobro de las cuotas mensuales.</small>
           </div>
         </div>
 
@@ -1365,6 +1375,7 @@ async function enviarFormulario() {
         alergias: getVal('alergias') || 'Ninguna',
         lesiones: getVal('lesiones') || 'Ninguna',
         fechaTransferencia: fechaT,
+        iban: (compActual === 'federada' ? getVal('ibanJugador') : getVal('ibanJugadorLocal')) || getVal('ibanJugador') || '',
         pack: pack ? (packNombres[pack] || pack) : 'Sin seleccionar',
         tallas: tallasResumen,
         cuotaAceptada: 'Sí',
