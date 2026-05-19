@@ -1099,6 +1099,24 @@
           Total inicial: <strong>85 € + 55 € = 140 €</strong>. Debe realizarse antes de final de junio para tramitar el pedido.<br>
           El resto del pack se abona en septiembre. Lo abonado se descontará del total de cuotas y del coste final de la equipación.
         </div>
+        <!-- Confirmación Opción 1 -->
+        <div id="confirm-opt1" style="display:none;margin-top:-6px;margin-bottom:10px;padding:10px 14px;background:#fdf0f0;border:1.5px solid var(--navy);border-top:none;border-radius:0 0 var(--radius) var(--radius);">
+          <label style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--gray-text);display:block;margin-bottom:6px;">Confirma tu elección <span class="req">*</span></label>
+          <select id="confirm-opt1-sel" onchange="setConfirmOpt('opt1')" style="width:100%;border:1.5px solid var(--gray-mid);border-radius:var(--radius);padding:8px 11px;font-size:13px;font-family:'Barlow',sans-serif;color:var(--text);background:#fff;outline:none;">
+            <option value="">Seleccionar...</option>
+            <option value="Opción 1 — Confirmo que pagaré 2 camisetas + 2 pantalones junto a la preinscripción (150 €)">✓ Confirmo que pagaré 2 camisetas + 2 pantalones junto a la preinscripción (150 €)</option>
+          </select>
+        </div>
+
+        <!-- Confirmación Opción 2 -->
+        <div id="confirm-opt2" style="display:none;margin-top:-6px;margin-bottom:10px;padding:10px 14px;background:#faf7f0;border:1.5px solid var(--gold);border-top:none;border-radius:0 0 var(--radius) var(--radius);">
+          <label style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--gray-text);display:block;margin-bottom:6px;">Confirma tu elección <span class="req">*</span></label>
+          <select id="confirm-opt2-sel" onchange="setConfirmOpt('opt2')" style="width:100%;border:1.5px solid var(--gray-mid);border-radius:var(--radius);padding:8px 11px;font-size:13px;font-family:'Barlow',sans-serif;color:var(--text);background:#fff;outline:none;">
+            <option value="">Seleccionar...</option>
+            <option value="Opción 2 — Confirmo que pagaré el pack completo junto a la preinscripción con 5% de descuento">✓ Confirmo que pagaré el pack completo junto a la preinscripción con 5% de descuento</option>
+          </select>
+        </div>
+
         <input type="hidden" id="pagoEquipOpcion" value="">
       </div>
     </div>
@@ -1448,7 +1466,18 @@ function setComp(comp) {
 function selectPagoEquip(opt) {
   document.getElementById('pago-opt1').classList.toggle('selected', opt === 'opt1');
   document.getElementById('pago-opt2').classList.toggle('selected', opt === 'opt2');
-  document.getElementById('pagoEquipOpcion').value = opt === 'opt1' ? 'Opción 1 — Pago parcial (235€ inicial)' : 'Opción 2 — Pack completo con 5% dto.';
+  // Show/hide confirmation dropdowns
+  document.getElementById('confirm-opt1').style.display = opt === 'opt1' ? 'block' : 'none';
+  document.getElementById('confirm-opt2').style.display = opt === 'opt2' ? 'block' : 'none';
+  // Reset dropdowns and hidden value when switching
+  document.getElementById('confirm-opt1-sel').selectedIndex = 0;
+  document.getElementById('confirm-opt2-sel').selectedIndex = 0;
+  document.getElementById('pagoEquipOpcion').value = '';
+}
+
+function setConfirmOpt(opt) {
+  const sel = document.getElementById('confirm-opt' + (opt === 'opt1' ? '1' : '2') + '-sel');
+  document.getElementById('pagoEquipOpcion').value = sel.value;
 }
 
 function selectPack(pack) {
@@ -1516,6 +1545,10 @@ async function enviarFormulario() {
       alert('Por favor, rellena los datos de contacto.');
       return;
     }
+  }
+  if (!getVal('pagoEquipOpcion')) {
+    alert('Por favor, selecciona y confirma tu opción de pago de equipación (Opción 1 u Opción 2).');
+    return;
   }
   if (!getChk('cuotaCheck') || !getChk('rgpdCheck')) {
     alert('Debes aceptar las cuotas y la política de privacidad para continuar.');
